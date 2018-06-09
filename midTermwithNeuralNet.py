@@ -1,3 +1,5 @@
+##这个版本在使用激活函数的时候有bug
+
 from sklearn.linear_model import LinearRegression 
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np 
@@ -34,33 +36,51 @@ for j in range(trainSize):
 # print(X)
 # X=np.array(X).reshape(-1,1)
 # print(y)
-print(y.shape)
-print(y)
-print("-----------------------------")
+# print(y.shape)
+# print(y)
+# print("-----------------------------")
 np.random.seed(1)
 syn0=2*np.random.random((128,25))-1
 # 输出层为6
 syn1=2*np.random.random((25,6))-1
 
-for j in range(3):
+for j in range(5):
 	l0=X
-	if j==0 :
-		print(syn0)
-		print(syn1)
+	# if j==1 :
+	# 	print(syn0)
+	# 	print(syn1)
 
 	l1=nonlin(np.dot(l0,syn0))
+
 	l2=nonlin(np.dot(l1,syn1))
+	
 	# print(l2.shape)
+	if  j==2:
+		print("------------dot of l0 and syn0")
+		print(np.dot(l0,syn0))
 
 	l2_error=y-l2
-
+	# if j==0 :
+	# 	print("-----------l2_ Error is ")
+	# 	print(l2_error)
 	# if(j%10000)==0:
-	print ("Error:"+str(np.mean(np.abs(l2_error))))
+	# print ("Error:"+str(np.mean(np.abs(l2_error))))
 	
 	l2_delta=l2_error*nonlin(l2,deriv=True)
+	# print("-----------l2_ delta is ")
+	# print(l2_delta)
+
 	l1_error=l2_delta.dot(syn1.T)
 
 	l1_delta=l1_error*nonlin(l1,deriv=True)
+
+	if  j==0:
+		print("------------dot of l1_delta")
+		print(l1_delta)
+		print("----------l0")
+		print(l0)
+		print("-----------l0.T.dot(l1_delta)")
+		print(l0.T.dot(l1_delta))
 
 	syn1+=l1.T.dot(l2_delta)
 	syn0+=l0.T.dot(l1_delta)
