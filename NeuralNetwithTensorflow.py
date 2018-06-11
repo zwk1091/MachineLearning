@@ -22,18 +22,18 @@ data=pd.read_csv("train.csv")
 min_max_scaler=MinMaxScaler()
 # x_data = np.linspace(-1,1,300)[:, np.newaxis]
 #对数据进行归一化
-origin_x_data=data.iloc[1:500,1:129]
+origin_x_data=data.iloc[1:1000,1:129]
 x_data=min_max_scaler.fit_transform(origin_x_data)
 
 noise = np.random.normal(0, 0.05, x_data.shape) 
 # y_data = np.square(x_data) - 0.5 + noise
-y_data=data.iloc[1:500,129]
+y_data=data.iloc[1:1000,129]
 print("--------y. shape")
 print(y_data.shape)
 # 2.定义节点准备接收数据
 # define placeholder for inputs to network  
 xs = tf.placeholder(tf.float32, [None, 128])
-ys = tf.placeholder(tf.float32, [499, ])   
+ys = tf.placeholder(tf.float32, [999, ])   
 
 # 3.定义神经层：隐藏层和预测层
 # add hidden layer 输入值是 xs，在隐藏层有 10 个神经元   
@@ -48,7 +48,7 @@ loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),
 
 # 5.选择 optimizer 使 loss 达到最小                   
 # 这一行定义了用什么方式去减少 loss，学习率是 0.1       
-train_step = tf.train.GradientDescentOptimizer(0.0002).minimize(loss)
+train_step = tf.train.GradientDescentOptimizer(0.001).minimize(loss)
 
 # important step 对所有变量进行初始化
 init = tf.global_variables_initializer()
@@ -57,10 +57,14 @@ sess = tf.Session()
 sess.run(init)
 
 # 迭代 1000 次学习，sess.run optimizer
-for i in range(3000):
+for i in range(50):
    # training train_step 和 loss 都是由 placeholder 定义的运算，所以这里要用 feed 传入参数
    sess.run(train_step, feed_dict={xs: x_data, ys: y_data})
-   if i % 50 == 0:
-       # to see the step improvement
-       # print(i,sess.run())
-       print(sess.run(loss, feed_dict={xs: x_data, ys: y_data}))
+   # if i % 300 == 0:
+   #     print(sess.run(loss, feed_dict={xs: x_data, ys: y_data}))
+
+test_data=pd.read_csv("test_raw.csv")
+test_x=test_data.iloc[1:10,1:129]
+
+pred_y=sess.run(train_step,feed_dict={xs:test_x})
+print(pred_y)
